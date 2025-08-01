@@ -1,4 +1,4 @@
-window.cultivationSystems = [
+const cultivationSystems = [
   {
     "systemName": "修真体系",
     "description": "以灵气为本，性命双修",

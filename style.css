@@ -124,14 +124,54 @@ body, html {
     font-family: 'KaiTi', 'STKaiti', '楷体', 'SimKai', serif;
     position: relative;
     z-index: 1;
+    overflow-x: auto;
+    min-height: 80px; /* 确保最小高度 */
 }
 
 #player-status, #world-status {
     width: 48%;
+    overflow-y: auto; /* 添加垂直滚动 */
+    max-height: 150px; /* 设置最大高度 */
+    min-height: 60px; /* 确保最小高度 */
+    padding-right: 5px; /* 为滚动条留出空间 */
+}
+
+/* 添加小屏幕设备的响应式样式 */
+@media (max-width: 480px) {
+    #status-bar {
+        flex-direction: column;
+        min-height: 120px;
+    }
+    
+    #player-status, #world-status {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+    
+    #world-status {
+        margin-bottom: 0;
+    }
 }
 
 #status-bar div {
     white-space: pre-wrap;
+}
+
+/* 添加状态栏滚动条样式 */
+#player-status::-webkit-scrollbar,
+#world-status::-webkit-scrollbar {
+    width: 5px;
+}
+
+#player-status::-webkit-scrollbar-track,
+#world-status::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+#player-status::-webkit-scrollbar-thumb,
+#world-status::-webkit-scrollbar-thumb {
+    background-color: var(--border-color);
+    border-radius: 10px;
 }
 
 #menu-bar {
@@ -648,4 +688,146 @@ footer {
     font-size: 18px;
     margin-top: 50px;
     opacity: 0.7;
+}
+
+/* 体系参照表样式 */
+.system-section {
+    background: linear-gradient(135deg, rgba(44, 62, 80, 0.9), rgba(52, 73, 94, 0.8));
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    margin-bottom: 30px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.system-title {
+    background-color: rgba(243, 156, 18, 0.2);
+    color: #F39C12;
+    font-size: 20px;
+    font-weight: bold;
+    padding: 15px 20px;
+    margin: 0;
+    text-align: center;
+    font-family: 'KaiTi', 'STKaiti', '楷体', 'SimKai', serif;
+    text-shadow: 0 0 10px rgba(243, 156, 18, 0.3);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.system-description {
+    color: var(--font-color);
+    font-size: 16px;
+    padding: 15px 20px;
+    margin: 0;
+    line-height: 1.6;
+    font-family: 'KaiTi', 'STKaiti', '楷体', 'SimKai', serif;
+    background-color: rgba(52, 73, 94, 0.3);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.ranks-table {
+    display: table;
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table-header {
+    display: table-row;
+    background-color: rgba(44, 62, 80, 0.8);
+    font-weight: bold;
+}
+
+.table-row {
+    display: table-row;
+    transition: background-color 0.3s;
+}
+
+.table-row:nth-child(even) {
+    background-color: rgba(52, 73, 94, 0.3);
+}
+
+.table-row:hover {
+    background-color: rgba(243, 156, 18, 0.1);
+}
+
+.table-header > div,
+.table-row > div {
+    display: table-cell;
+    padding: 12px 15px;
+    border-bottom: 1px solid var(--border-color);
+    color: var(--font-color);
+    font-size: 14px;
+    font-family: 'KaiTi', 'STKaiti', '楷体', 'SimKai', serif;
+    vertical-align: top;
+    line-height: 1.4;
+}
+
+.rank-name {
+    width: 15%;
+    font-weight: bold;
+    color: #F39C12;
+}
+
+.rank-method {
+    width: 20%;
+}
+
+.rank-difficulty {
+    width: 10%;
+    text-align: center;
+}
+
+.rank-bottleneck {
+    width: 20%;
+}
+
+.rank-resources {
+    width: 20%;
+}
+
+.rank-comparison {
+    width: 15%;
+}
+
+.table-header .rank-name,
+.table-header .rank-method,
+.table-header .rank-difficulty,
+.table-header .rank-bottleneck,
+.table-header .rank-resources,
+.table-header .rank-comparison {
+    color: #F39C12;
+    text-align: center;
+    font-weight: bold;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .ranks-table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+    
+    .table-header,
+    .table-row {
+        display: block;
+        margin-bottom: 15px;
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        overflow: hidden;
+    }
+    
+    .table-header > div,
+    .table-row > div {
+        display: block;
+        width: 100%;
+        border-bottom: 1px solid var(--border-color);
+        padding: 8px 15px;
+    }
+    
+    .table-header > div:before,
+    .table-row > div:before {
+        content: attr(data-label) ": ";
+        font-weight: bold;
+        color: #F39C12;
+    }
 }

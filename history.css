@@ -1,4 +1,14 @@
 /* 历史记录页面专用样式 */
+footer {
+    position: fixed;
+    bottom: 10px;
+    width: 100%;
+    text-align: center;
+    color: rgba(0, 0, 0, 0.5);
+    font-size: 14px;
+    pointer-events: none;
+}
+
 :root {
     --font-color: #FFFFFF;
     --bg-color: rgba(0, 0, 0, 0.7);
@@ -18,7 +28,7 @@ body, html {
     justify-content: center;
     align-items: center;
     font-family: 'KaiTi', 'STKaiti', '楷体', 'SimKai', serif;
-    overflow: auto;
+    overflow: hidden;
 }
 
 .game-wrapper {

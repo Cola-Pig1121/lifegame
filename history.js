@@ -124,9 +124,14 @@ class HistoryManager {
 
     // 清空所有历史记录
     clearAllHistory() {
-        const historyKey = 'cultivationGameHistory';
-        localStorage.removeItem(historyKey);
+        // 只清除历史记录，其他数据保持不变
+        localStorage.removeItem('cultivationGameHistory');
+        
+        // 重新加载历史记录列表
         this.loadHistoryList();
+        
+        // 显示清空成功提示
+        alert('✅ 历史记录已清空！');
     }
 }
 
