@@ -1,0 +1,84 @@
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    line-height: 1.6;
+    background-color: #f4f4f9;
+    color: #333;
+    margin: 0;
+    padding: 20px;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 40px;
+    border-bottom: 2px solid #ddd;
+    padding-bottom: 20px;
+}
+
+header h1 {
+    color: #2c3e50;
+}
+
+header a {
+    text-decoration: none;
+    color: #3498db;
+    font-size: 1.2em;
+    transition: color 0.3s;
+}
+
+header a:hover {
+    color: #2980b9;
+}
+
+.system-card {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    margin-bottom: 30px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    overflow: hidden;
+}
+
+.system-header {
+    background-color: #34495e;
+    color: #fff;
+    padding: 15px 20px;
+}
+
+.system-header h2 {
+    margin: 0;
+    font-size: 1.8em;
+}
+
+.system-header p {
+    margin: 5px 0 0;
+    font-style: italic;
+    opacity: 0.9;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+}
+
+thead tr {
+    background-color: #ecf0f1;
+}
+
+th {
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+tbody tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+tbody tr:hover {
+    background-color: #f1f1f1;
+}
