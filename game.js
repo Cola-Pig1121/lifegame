@@ -150,10 +150,11 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         
         saveGame() {
-            // 使用全局函数 saveGame 而不是 saveGameState
+            // 使用全局函数 saveGame 和 saveToHistory
             saveGame(this.state);
+            saveToHistory(this.state);
             // 系统保存命令直接弹窗提示，不发送到对话框
-            alert("✅ 游戏已保存");
+            alert("✅ 游戏已保存并添加到历史记录");
         },
 
         importGame(event) {

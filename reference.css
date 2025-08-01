@@ -1,8 +1,8 @@
 body {
     font-family: 'KaiTi', 'STKaiti', '楷体', 'SimKai', serif;
     line-height: 1.6;
-    background-color: #f4f4f9;
-    color: #333;
+    background-color: #ffffff;
+    color: #000000;
     margin: 0;
     padding: 20px;
     overflow-y: auto;
@@ -30,7 +30,7 @@ header {
 }
 
 header h1 {
-    color: #2c3e50;
+    color: #000000;
 }
 
 header a {
@@ -65,9 +65,9 @@ header a:hover {
 .system-description {
     padding: 15px 20px;
     margin: 0;
-    background-color: #ecf0f1;
+    background-color: #ffffff;
     font-style: italic;
-    color: #2c3e50;
+    color: #000000;
 }
 
 /* 自适应表格样式 */

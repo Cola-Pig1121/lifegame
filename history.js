@@ -3,7 +3,11 @@ class HistoryManager {
         this.elements = {
             historyList: document.getElementById('history-list'),
             backToGameBtn: document.getElementById('back-to-game-btn'),
-            clearAllBtn: document.getElementById('clear-all-btn')
+            clearAllBtn: document.getElementById('clear-all-btn'),
+            detailsModal: document.getElementById('details-modal'),
+            modalTitle: document.getElementById('modal-title'),
+            modalBody: document.getElementById('modal-body'),
+            closeButton: document.querySelector('.close-button')
         };
         
         this.init();
@@ -24,9 +28,18 @@ class HistoryManager {
                 this.clearAllHistory();
             }
         });
+
+        this.elements.closeButton.addEventListener('click', () => {
+            this.hideDetailsModal();
+        });
+
+        window.addEventListener('click', (event) => {
+            if (event.target == this.elements.detailsModal) {
+                this.hideDetailsModal();
+            }
+        });
     }
 
-    // 加载历史记录列表
     loadHistoryList() {
         const historyKey = 'cultivationGameHistory';
         const history = JSON.parse(localStorage.getItem(historyKey) || '[]');
@@ -41,8 +54,7 @@ class HistoryManager {
             return;
         }
 
-        // 按保存时间倒序排列
-        history.sort((a, b) => new Date(b.saveTime) - new Date(a.saveTime));
+        history.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
 
         history.forEach(record => {
             const card = document.createElement('div');
@@ -52,23 +64,24 @@ class HistoryManager {
             const rankName = playerSystem ? playerSystem.ranks[record.player.rankIndex].name : '未知';
             
             card.innerHTML = `
-                <div class="history-card-title">${record.title}</div>
+                <div class="history-card-title">${record.title || `${record.player.name}的修仙之路`}</div>
                 <div class="history-card-info">
                     <div>修炼体系：${record.player.system}</div>
                     <div>当前境界：${rankName}</div>
                     <div>修炼年龄：${record.player.age}岁</div>
                     <div>所在地点：${record.world.location}</div>
-                    <div>保存时间：${record.saveTime}</div>
+                    <div>保存时间：${new Date(record.timestamp).toLocaleString()}</div>
                 </div>
                 <div class="history-card-actions">
                     <button class="continue-btn" data-game-id="${record.id}">继续游戏</button>
+                    <button class="details-btn" data-game-id="${record.id}">查看详情</button>
                     <button class="delete-btn" data-game-id="${record.id}">删除记录</button>
                 </div>
             `;
 
-            // 添加事件监听器
             const continueBtn = card.querySelector('.continue-btn');
             const deleteBtn = card.querySelector('.delete-btn');
+            const detailsBtn = card.querySelector('.details-btn');
             
             continueBtn.addEventListener('click', (e) => {
                 e.stopPropagation();
@@ -79,42 +92,61 @@ class HistoryManager {
                 e.stopPropagation();
                 if (confirm('确定要删除这个历史记录吗？')) {
                     this.deleteHistoryRecord(record.id);
-                    this.loadHistoryList(); // 重新加载列表
+                    this.loadHistoryList();
                 }
+            });
+
+            detailsBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                this.showDetailsModal(record);
             });
 
             this.elements.historyList.appendChild(card);
         });
     }
 
-    // 继续游戏
+    showDetailsModal(record) {
+        this.elements.modalTitle.textContent = `${record.title || `${record.player.name}的修仙之路`} - 事件详情`;
+        this.elements.modalBody.innerHTML = '';
+
+        if (record.storyHistory && record.storyHistory.length > 0) {
+            record.storyHistory.forEach(entry => {
+                const p = document.createElement('p');
+                p.innerHTML = entry.event;
+                this.elements.modalBody.appendChild(p);
+            });
+        } else {
+            this.elements.modalBody.innerHTML = '<p>此存档无详细事件记录。</p>';
+        }
+
+        this.elements.detailsModal.style.display = 'block';
+    }
+
+    hideDetailsModal() {
+        this.elements.detailsModal.style.display = 'none';
+    }
+
     continueGame(gameId) {
         const historyKey = 'cultivationGameHistory';
         const history = JSON.parse(localStorage.getItem(historyKey) || '[]');
         const gameRecord = history.find(record => record.id === gameId);
         
         if (gameRecord) {
-            // 将完整的游戏状态设置到localStorage，与game.js的loadFromContinueState方法匹配
             const gameState = {
                 player: gameRecord.player,
                 world: gameRecord.world,
                 storyHistory: gameRecord.storyHistory || [],
                 gameId: gameRecord.id,
                 choices: [{ text: "继续探索", event: 'explore' }],
-                // 保持其他可能的状态数据
                 background: gameRecord.background,
                 attributes: gameRecord.attributes
             };
             
-            // 设置继续游戏的标记
             localStorage.setItem('continueGameState', JSON.stringify(gameState));
-            
-            // 跳转到游戏页面
             window.location.href = 'index.html';
         }
     }
 
-    // 删除历史记录
     deleteHistoryRecord(gameId) {
         const historyKey = 'cultivationGameHistory';
         let history = JSON.parse(localStorage.getItem(historyKey) || '[]');
@@ -122,15 +154,9 @@ class HistoryManager {
         localStorage.setItem(historyKey, JSON.stringify(history));
     }
 
-    // 清空所有历史记录
     clearAllHistory() {
-        // 只清除历史记录，其他数据保持不变
         localStorage.removeItem('cultivationGameHistory');
-        
-        // 重新加载历史记录列表
         this.loadHistoryList();
-        
-        // 显示清空成功提示
         alert('✅ 历史记录已清空！');
     }
 }

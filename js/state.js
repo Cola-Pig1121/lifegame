@@ -20,10 +20,6 @@ function loadGame() {
 }
 
 function saveToHistory(state) {
-    if (!state.player || state.player.name === "无名者") {
-        return;
-    }
-
     const historyKey = 'cultivationGameHistory';
     const history = JSON.parse(localStorage.getItem(historyKey) || '[]');
     

@@ -12,7 +12,7 @@ async function handleChoice(index, game) {
 const eventHandlers = {
     // 开始探索事件处理器
     async start_explore() {
-        const startMessage = "你踏出了修仙之路的第一步...";
+        const startMessage = `游戏开始。你的名字是${this.state.player.name}，你选择的修炼体系是【${this.state.player.system}】。你踏出了修仙之路的第一步...`;
         await displayEvent(this.elements, startMessage, []);
         
         // 保存开始探索的事件到历史记录
@@ -51,50 +51,77 @@ const eventHandlers = {
             // 更新状态显示
             updateStatus(this.elements, this.state);
             
-            // 显示属性变化结果并提供继续选项
+            // 显示属性变化结果
             if (changes.length > 0) {
-                const effectsText = changes.join('，');
-                const continueChoices = [
-                    { text: "继续探索", event: 'explore' },
-                    { text: "深入修炼", event: 'explore' },
-                    { text: "寻找机缘", event: 'explore' },
-                    { text: "[自定义] 输入自定义行动", event: 'custom_action' }
-                ];
-                
-                await displayEvent(this.elements, `【属性变化】${effectsText}`, continueChoices);
-                this.state.choices = continueChoices;
-                
+                const effectsText = `【属性变化】\n${changes.join('\n')}`;
                 // 保存到历史记录
                 this.state.storyHistory.push({
-                    event: `【属性变化】${effectsText}`,
-                    choices: continueChoices,
+                    event: effectsText,
+                    choices: [], // No choices here
                     timestamp: Date.now(),
                     playerState: { ...this.state.player },
                     worldState: { ...this.state.world },
                     attributes: { ...this.state.attributes }
                 });
-                
-                // 延迟保存，避免覆盖用户正在查看的选项框
-                this.scheduleAutoSave();
+                // 在主窗口显示属性变化，然后再继续
+                await displayEvent(this.elements, effectsText, []);
             }
+            
+            // 直接继续探索，而不是显示新选项
+            await eventHandlers.explore.call(this, choice.text);
+            
         } else {
             // 如果没有属性变化，直接继续探索
-            await eventHandlers.explore.call(this);
+            await eventHandlers.explore.call(this, choice ? choice.text : undefined);
         }
     },
 
-    async explore() {
+    async explore(userChoice) {
         this.state.player.age += 1;
         this.state.world.year += 1;
 
         const playerSystem = cultivationSystems.find(s => s.systemName === this.state.player.system);
         const currentRank = playerSystem.ranks[this.state.player.rankIndex];
-        const prompt = createEnhancedAIPrompt(this.state, currentRank);
         
-        await displayEvent(this.elements, "命运的齿轮正在转动...", []);
+        // 使用prompt-template.js中的提示词模板
+        let prompt;
+        if (window.getPromptTemplate) {
+            const playerStateForPrompt = {
+                ...this.state.player,
+                level: currentRank.name,
+                attributes: this.state.attributes || {}
+            };
+            prompt = window.getPromptTemplate(
+                this.state.player.name,
+                this.state.player.system,
+                playerStateForPrompt,
+                this.state.storyHistory.map(h => h.event),
+                this.state.world.location, // Pass location
+                this.state.world.year      // Pass year
+            );
+        } else {
+            // 如果找不到prompt-template.js，回退到原来的提示词
+            prompt = createEnhancedAIPrompt(this.state, currentRank);
+        }
+
+        // 如果有用户选择，将其添加到提示词中
+        if (userChoice) {
+            prompt += `\n\n## 用户上一次的选择\n${userChoice}\n`;
+        }
 
         try {
-            const storyResult = await generateAIStory(prompt, this.state.baseUrl, this.state.apiKey, this.state.model);
+            // 在这里添加加载动画和等待
+            if (window.loadingManager) {
+                await window.loadingManager.show('正在感应天机变化...', 30000); // 等待30秒
+                window.loadingManager.updateText('正在沟通冥冥之中的大道...');
+            }
+
+            const storyResult = await generateAIStory(
+                prompt, 
+                this.state.baseUrl, 
+                this.state.apiKey, 
+                this.state.model
+            );
             
             updateGameStateFromStory(this.state, storyResult);
             
@@ -140,12 +167,44 @@ const eventHandlers = {
 
         const playerSystem = cultivationSystems.find(s => s.systemName === this.state.player.system);
         const currentRank = playerSystem.ranks[this.state.player.rankIndex];
-        const prompt_text = createCustomActionPrompt(this.state, currentRank, customAction);
         
-        await displayEvent(this.elements, `你决定：${customAction}...`, []);
-
+        // 使用prompt-template.js中的提示词模板
+        let prompt_text;
+        if (window.getPromptTemplate) {
+            const playerStateForPrompt = {
+                ...this.state.player,
+                level: currentRank.name,
+                attributes: this.state.attributes || {}
+            };
+            prompt_text = window.getPromptTemplate(
+                this.state.player.name,
+                this.state.player.system,
+                playerStateForPrompt,
+                this.state.storyHistory.map(h => h.event),
+                this.state.world.location, // Pass location
+                this.state.world.year      // Pass year
+            );
+            
+            // 添加用户自定义行动到提示词
+            prompt_text += `\n\n## 用户行动\n${customAction}`;
+        } else {
+            // 如果找不到prompt-template.js，回退到原来的提示词
+            prompt_text = createCustomActionPrompt(this.state, currentRank, customAction);
+        }
+        
         try {
-            const storyResult = await generateAIStory(prompt_text, this.state.baseUrl, this.state.apiKey, this.state.model);
+            // 在这里添加加载动画和等待
+            if (window.loadingManager) {
+                await window.loadingManager.show('正在感应天机变化...', 30000); // 等待30秒
+                window.loadingManager.updateText('正在沟通冥冥之中的大道...');
+            }
+            
+            const storyResult = await generateAIStory(
+                prompt_text, 
+                this.state.baseUrl, 
+                this.state.apiKey, 
+                this.state.model
+            );
             
             updateGameStateFromStory(this.state, storyResult);
             
@@ -220,7 +279,7 @@ function createEnhancedAIPrompt(state, currentRank) {
     return `修仙故事生成器。角色：${player.name}，功法：${currentRank.name}(${currentRank.method})。
 上次：${lastEvent}
 
-生成50字故事+4选项，JSON格式：
+生成50字故事+3选项，JSON格式：
 {
   "story": "50字故事",
   "choices": [
@@ -248,7 +307,7 @@ function createCustomActionPrompt(state, currentRank, customAction) {
 上次：${lastEvent}
 玩家行动：${customAction}
 
-生成50字故事+4选项，JSON格式：
+生成50字故事+3选项，JSON格式：
 {
   "story": "50字故事",
   "choices": [
