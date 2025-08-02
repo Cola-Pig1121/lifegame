@@ -42,7 +42,7 @@ class RequestLimiter {
 
 // 创建Express应用
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000;
 
 // 创建请求限制器实例
 const requestLimiter = new RequestLimiter(5); // 每分钟最多5个请求
