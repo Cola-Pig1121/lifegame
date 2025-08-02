@@ -2,11 +2,7 @@
 const express = require('express');
 const { OpenAI } = require('openai');
 const cors = require('cors');
-const dotenv = require('dotenv');
 const path = require('path');
-
-// 加载环境变量
-dotenv.config();
 
 // 简单的请求限制器
 class RequestLimiter {
@@ -46,7 +42,7 @@ class RequestLimiter {
 
 // 创建Express应用
 const app = express();
-const port = process.env.PORT || 3000;
+const port = 3000;
 
 // 创建请求限制器实例
 const requestLimiter = new RequestLimiter(5); // 每分钟最多5个请求
