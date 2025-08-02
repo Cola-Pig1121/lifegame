@@ -135,6 +135,25 @@ function updateStatus(elements, state) {
         if (player.money !== undefined) playerStatusText += `\n灵石: ${player.money}`;
     }
 
+    // 添加婚姻状态显示
+    if (state.marriage) {
+        const marriageInfo = state.marriage;
+        playerStatusText += '\n\n【婚姻状态】';
+        
+        if (marriageInfo.status === 'married' && marriageInfo.spouse) {
+            playerStatusText += `\n道侣: ${marriageInfo.spouse.name || '未知'}`;
+            playerStatusText += `\n关系: ${marriageInfo.relationship || 0}/100`;
+            if (marriageInfo.children && marriageInfo.children.length > 0) {
+                playerStatusText += `\n子嗣: ${marriageInfo.children.length}人`;
+            }
+        } else {
+            playerStatusText += '\n状态: 单身';
+            if (state.player.fate) {
+                playerStatusText += `\n姻缘: ${state.player.fate || 0}`;
+            }
+        }
+    }
+
     // 确保元素存在
     if (elements.playerStatus && elements.worldStatus) {
         elements.playerStatus.innerText = playerStatusText;
@@ -188,13 +207,12 @@ function showSettingsModal(elements, state, isForceMode = false, isNewStory = fa
     
     // 如果是强制模式（开始探索前）或新故事模式
     if (isForceMode || isNewStory) {
-        // 显示"开始探索"和"测试连接"按钮
+        // 显示"开始探索"按钮
         elements.startExploreBtn.style.display = 'inline-block';
-        elements.testConnectionBtn.style.display = 'inline-block';
         
-        // 隐藏"保存配置"和"取消"按钮
+        // 隐藏"保存配置"按钮，但保留"取消"按钮
         elements.saveSettingsBtn.style.display = 'none';
-        elements.cancelSettingsBtn.style.display = 'none';
+        elements.cancelSettingsBtn.style.display = 'inline-block';
         
         // 添加提示文本
         let forceHint = modalContent.querySelector('.force-hint');
@@ -222,8 +240,7 @@ function showSettingsModal(elements, state, isForceMode = false, isNewStory = fa
         }
     } else {
         // 普通设置模式
-        elements.startExploreBtn.style.display = 'none';
-        elements.testConnectionBtn.style.display = 'inline-block';
+        elements.startExploreBtn.style.display = 'inline-block';
         elements.saveSettingsBtn.style.display = 'inline-block';
         elements.cancelSettingsBtn.style.display = 'inline-block';
         

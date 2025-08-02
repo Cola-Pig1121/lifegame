@@ -22,7 +22,7 @@ const elementIds = {
     currentModel: 'current-model',
     currentApiKey: 'current-api-key',
     saveSettingsBtn: 'save-settings-btn',
-    testConnectionBtn: 'test-connection-btn',
+
     startExploreBtn: 'start-explore-btn',
     cancelSettingsBtn: 'cancel-settings-btn',
     playerNameInput: 'player-name-input',

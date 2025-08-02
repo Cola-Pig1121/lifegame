@@ -82,46 +82,7 @@ class StreamHandler {
         }
     }
 
-    // 测试连接
-    async testConnection(baseUrl, apiKey, model) {
-        try {
-            console.log('开始测试连接:', { baseUrl, model });
-            
-            const response = await fetch('/api/test-connection', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    baseUrl,
-                    apiKey,
-                    model
-                })
-            });
 
-            // 无论响应状态如何，都尝试解析JSON
-            const responseText = await response.text();
-            console.log('测试连接响应:', responseText);
-            
-            let result;
-            try {
-                result = JSON.parse(responseText);
-            } catch (e) {
-                console.error('解析响应JSON失败:', e);
-                throw new Error(`无法解析服务器响应: ${responseText}`);
-            }
-            
-            if (!response.ok) {
-                const errorMessage = result.error || `连接测试失败！状态码: ${response.status}`;
-                throw new Error(errorMessage);
-            }
-
-            return result;
-        } catch (error) {
-            console.error('连接测试失败:', error);
-            throw error;
-        }
-    }
 }
 
 // 导出流处理器

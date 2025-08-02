@@ -6,6 +6,12 @@ document.addEventListener('DOMContentLoaded', () => {
         state: {},
 
         async init() {
+            // 初始化上下文分析器
+            window.contextAnalyzer = new ContextAnalyzer(this.state);
+            
+            // 初始化上下文感知奇遇系统
+            window.contextAdventureManager = new ContextAdventureManager(this.state, contextAnalyzer);
+            
             this.setupEventListeners();
             this.autoSaveTimer = null; // 添加自动保存定时器
             
@@ -49,6 +55,32 @@ document.addEventListener('DOMContentLoaded', () => {
                 this.state.player.name = config.playerName;
             }
             
+            // 初始化婚姻系统属性
+            this.state.player = {
+                ...this.state.player,
+                cultivation: 0,
+                health: 100,
+                mana: 50,
+                lifespan: 100,
+                wealth: 100,
+                experience: 0,
+                fate: 0,  // 姻缘值
+                charm: 0, // 魅力值
+                romance: 0 // 情缘值
+            };
+            
+            // 初始化婚姻状态
+            if (!this.state.marriage) {
+                this.state.marriage = {
+                    status: 'single',
+                    spouse: null,
+                    children: [],
+                    marriageYear: null,
+                    relationship: 0,
+                    marriageEvents: []
+                };
+            }
+            
             // 清空对话框
             this.elements.eventLog.innerHTML = '';
             
@@ -88,7 +120,7 @@ document.addEventListener('DOMContentLoaded', () => {
             this.elements.cancelStartBtn.addEventListener('click', () => hideConfirmModal(this.elements));
             
             this.elements.saveSettingsBtn.addEventListener('click', () => this.saveSettings());
-            this.elements.testConnectionBtn.addEventListener('click', () => this.runTestConnection());
+
             this.elements.cancelSettingsBtn.addEventListener('click', () => hideSettingsModal(this.elements));
             this.elements.toggleKeyVisibility.addEventListener('click', () => toggleApiKeyVisibility(this.elements));
             this.elements.randomNameBtn.addEventListener('click', () => this.generateRandomPlayerName());
@@ -207,24 +239,7 @@ document.addEventListener('DOMContentLoaded', () => {
             displayEvent(this.elements, settingsMessage, this.state.choices);
         },
 
-        async runTestConnection() {
-            const btn = this.elements.testConnectionBtn;
-            btn.textContent = '测试中...';
-            btn.disabled = true;
-            try {
-                const response = await testConnection(
-                    this.elements.baseUrlInput.value, 
-                    this.elements.apiKeyInput.value,
-                    this.elements.modelSelect.value
-                );
-                alert(response.ok ? '✅ 连接测试成功！' : `❌ 连接测试失败！状态码: ${response.status}`);
-            } catch (error) {
-                alert(`❌ 连接测试失败！错误: ${error.message}`);
-            } finally {
-                btn.textContent = '测试连接';
-                btn.disabled = false;
-            }
-        },
+
 
         async loadFromContinueState(gameState) {
             // 直接使用历史记录中的游戏状态，包括API配置
@@ -392,7 +407,7 @@ document.addEventListener('DOMContentLoaded', () => {
             
             // 处理事件
             if (eventHandlers[choice.event]) {
-                await eventHandlers[choice.event].call(this, this.elements, choice);
+                await eventHandlers[choice.event].call(this);
             } else {
                 console.error('未找到事件处理器:', choice.event);
             }

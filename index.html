@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,6 +8,7 @@
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="css/loading.css">
 </head>
+
 <body>
     <div class="game-wrapper">
         <div id="game-container">
@@ -54,8 +56,10 @@
                         <label for="base-url-input">Base URL:</label>
                         <input type="text" id="base-url-input" placeholder="请输入API的Base URL">
                         <div class="preset-buttons">
-                            <button class="preset-btn" data-url="https://api-inference.modelscope.cn/v1/chat/completions">ModelScope</button>
-                            <button class="preset-btn" data-url="https://router.huggingface.co/v1/chat/completions">HuggingFace</button>
+                            <button class="preset-btn"
+                                data-url="https://api-inference.modelscope.cn/v1/chat/completions">ModelScope</button>
+                            <button class="preset-btn"
+                                data-url="https://router.huggingface.co/v1/chat/completions">HuggingFace</button>
                         </div>
                     </div>
                     <div class="setting-item">
@@ -68,7 +72,8 @@
                         <label for="api-key-input">API Key:</label>
                         <input type="password" id="api-key-input" placeholder="请输入你的API Key">
                         <button id="toggle-key-visibility" type="button">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
                                 <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
                                 <circle cx="12" cy="12" r="3"></circle>
                             </svg>
@@ -88,7 +93,7 @@
                 </div>
                 <div class="modal-buttons">
                     <button id="save-settings-btn">保存设置</button>
-                    <button id="test-connection-btn">测试连接</button>
+
                     <button id="start-explore-btn" style="display: none;">开始探索</button>
                     <button id="cancel-settings-btn">取消</button>
                 </div>
@@ -105,8 +110,16 @@
     <script src="js/loading-manager.js"></script>
     <script src="js/stream-handler.js"></script>
     <script src="js/api.js"></script>
+    <script src="js/adventure-config.js"></script>
+    <script src="js/adventure-manager.js"></script>
     <script src="js/state.js"></script>
+    <script src="js/context/ErrorHandler.js"></script>
+    <script src="js/context/WeightCalculator.js"></script>
+    <script src="js/context/RelationshipAnalyzer.js"></script>
+    <script src="js/context/ContextAnalyzer.js"></script>
+    <script src="js/context/ContextAdventureManager.js"></script>
     <script src="js/events.js"></script>
     <script src="game.js"></script>
 </body>
+
 </html>

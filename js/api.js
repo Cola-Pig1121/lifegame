@@ -84,15 +84,31 @@ window.generateAIStory = async function(prompt, baseUrl, apiKey, model, playerSt
         throw new Error('API配置未设置');
     }
 
-    // 使用提示词模板生成完整提示词
+    // 构建包含完整上下文的提示词
     let fullPrompt = prompt;
-    if (window.getPromptTemplate && playerState) {
-        fullPrompt = window.getPromptTemplate(
-            playerState.name || '修仙者',
-            playerState.system || '修真',
-            playerState,
-            playerState.history || []
-        );
+    
+    if (playerState) {
+        // 构建完整的上下文信息
+        const contextInfo = {
+            角色信息: {
+                姓名: playerState.name || '修仙者',
+                功法: playerState.system || '修真',
+                境界: playerState.level || '练气期',
+                年龄: playerState.age || 20,
+                地点: playerState.location || '未知地点',
+                年份: playerState.year || 1
+            },
+            当前属性: playerState.attributes || {},
+            历史记录: playerState.history || [],
+            世界状态: playerState.world || {}
+        };
+        
+        fullPrompt = `修仙人生模拟器 - 完整上下文
+
+${JSON.stringify(contextInfo, null, 2)}
+
+## 当前情境
+${prompt}`;
     }
     
     // 如果有用户选择，将其添加到提示词中
@@ -100,6 +116,8 @@ window.generateAIStory = async function(prompt, baseUrl, apiKey, model, playerSt
         fullPrompt += `\n\n## 用户上一次的选择\n${userChoice}\n`;
     }
 
+    // 清理URL中的反引号
+    baseUrl = baseUrl.replace(/`/g, '').trim();
     console.log('API调用参数:', { baseUrl, model, promptLength: fullPrompt.length });
 
     // 创建一个Promise来处理流式响应
@@ -207,14 +225,3 @@ window.generateAIStory = async function(prompt, baseUrl, apiKey, model, playerSt
         }
     });
 }
-
-// 将测试连接函数暴露到全局作用域
-window.testConnection = async function(baseUrl, apiKey, model) {
-    if (!baseUrl || !apiKey || !model) {
-        throw new Error('请先填写Base URL、选择模型和API Key');
-    }
-
-    // 使用StreamHandler进行连接测试
-    const streamHandler = new StreamHandler();
-    return streamHandler.testConnection(baseUrl, apiKey, model);
-};

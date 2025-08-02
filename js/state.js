@@ -14,6 +14,30 @@ function loadGame() {
         if (!state.storyHistory) state.storyHistory = [];
         if (!state.gameId) state.gameId = Date.now();
         if (!state.choices) state.choices = [{ text: "继续探索", event: 'explore' }];
+        if (!state.marriage) {
+            state.marriage = {
+                status: 'single',
+                spouse: null,
+                children: [],
+                marriageYear: null,
+                relationship: 0,
+                marriageEvents: []
+            };
+        }
+        if (!state.adventure) {
+            state.adventure = {
+                activeEvents: [],      // 当前激活的奇遇
+                completedEvents: [],   // 已完成的奇遇
+                cooldowns: {},         // 奇遇冷却时间
+                triggerCount: 0,       // 触发次数统计
+                totalRewards: {        // 总奖励统计
+                    cultivation: 0,
+                    spiritStones: 0,
+                    artifacts: 0,
+                    techniques: 0
+                }
+            };
+        }
         return state;
     }
     return null;
@@ -32,7 +56,9 @@ function saveToHistory(state) {
         attributes: state.attributes,
         choices: state.choices || [{ text: "继续探索", event: 'explore' }],
         timestamp: Date.now(),
-        title: `${state.player.name}的修仙之路`
+        title: `${state.player.name}的修仙之路`,
+        marriage: { ...state.marriage },
+        adventure: { ...state.adventure }
     };
 
     const existingIndex = history.findIndex(record => record.id === state.gameId);
@@ -122,6 +148,26 @@ function createNewGameState(savedState) {
         playerName: null,
         storyHistory: [],
         gameId: Date.now(),
+        marriage: {
+            status: 'single', // single, engaged, married, divorced
+            spouse: null,
+            children: [],
+            marriageYear: null,
+            relationship: 0, // 0-100 关系值
+            marriageEvents: []
+        },
+        adventure: {
+            activeEvents: [],
+            completedEvents: [],
+            cooldowns: {},
+            triggerCount: 0,
+            totalRewards: {
+                cultivation: 0,
+                spiritStones: 0,
+                artifacts: 0,
+                techniques: 0
+            }
+        }
     };
 
     if (savedState) {
