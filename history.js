@@ -137,9 +137,13 @@ class HistoryManager {
                 world: gameRecord.world,
                 storyHistory: gameRecord.storyHistory || [],
                 gameId: gameRecord.id,
-                choices: [{ text: "继续探索", event: 'explore' }],
+                choices: gameRecord.choices || [{ text: "继续探索", event: 'explore' }],
                 background: gameRecord.background,
-                attributes: gameRecord.attributes
+                attributes: gameRecord.attributes,
+                // 保存API配置信息
+                baseUrl: gameRecord.baseUrl,
+                apiKey: gameRecord.apiKey,
+                model: gameRecord.model
             };
             
             localStorage.setItem('continueGameState', JSON.stringify(gameState));

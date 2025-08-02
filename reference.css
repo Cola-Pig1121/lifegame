@@ -99,6 +99,7 @@ header a:hover {
 .table-header > div, .table-row > div {
     padding: 12px 8px;
     background-color: #fff;
+    color: #000000;
     display: flex;
     align-items: center;
     word-wrap: break-word;

@@ -6,8 +6,9 @@ function getElementsById(ids) {
     return elements;
 }
 
-async function displayEvent(elements, text, choices = []) {
+async function displayEvent(elements, text, choices = [], showRetryButton = false) {
     const p = document.createElement('p');
+    p.className = 'event-text';
     elements.eventLog.appendChild(p);
     if (typeof typewriterEffect === 'function') {
         await typewriterEffect(p, text);
@@ -18,11 +19,14 @@ async function displayEvent(elements, text, choices = []) {
     
     // 延迟渲染选项，确保自动保存先完成
     setTimeout(() => {
-        renderChoices(elements, choices);
+        renderChoices(elements, choices, showRetryButton);
     }, 100);
 }
 
-function renderChoices(elements, choices) {
+function renderChoices(elements, choices, showRetryButton = false) {
+    // 保存现有的重试按钮（如果存在）
+    const existingRetryButton = elements.choicesContainer.querySelector('.retry-button');
+    
     elements.choicesContainer.innerHTML = '';
     if (!choices || choices.length === 0) return;
 
@@ -33,6 +37,57 @@ function renderChoices(elements, choices) {
         button.textContent = choice.text;
         elements.choicesContainer.appendChild(button);
     });
+
+    // 如果需要显示重试按钮，添加重试按钮
+    if (showRetryButton || existingRetryButton) {
+        const retryButton = document.createElement('button');
+        retryButton.className = 'retry-button';
+        retryButton.dataset.persistent = 'true'; // 添加持久化标识
+        retryButton.textContent = '🔄 重新生成';
+        retryButton.style.cssText = `
+            background-color: #f39c12;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin: 5px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        `;
+        
+        retryButton.addEventListener('mouseover', () => {
+            retryButton.style.backgroundColor = '#e67e22';
+        });
+        
+        retryButton.addEventListener('mouseout', () => {
+            retryButton.style.backgroundColor = '#f39c12';
+        });
+        
+        retryButton.addEventListener('click', async () => {
+            // 删除当前的事件文本（最后一个事件）
+            const eventTexts = elements.eventLog.querySelectorAll('.event-text');
+            if (eventTexts.length > 0) {
+                const lastEventText = eventTexts[eventTexts.length - 1];
+                lastEventText.remove();
+            }
+            
+            // 从故事历史中删除最后一个事件
+            if (window.gameInstance && window.gameInstance.state.storyHistory.length > 0) {
+                window.gameInstance.state.storyHistory.pop();
+            }
+            
+            // 清空选择按钮
+            elements.choicesContainer.innerHTML = '';
+            
+            // 重新触发探索事件（保持原有流程：加载动画 -> 等待30秒 -> 发送请求）
+            if (window.gameInstance && eventHandlers && eventHandlers.explore) {
+                await eventHandlers.explore.call(window.gameInstance);
+            }
+        });
+        
+        elements.choicesContainer.appendChild(retryButton);
+    }
 }
 
 function updateStatus(elements, state) {

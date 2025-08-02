@@ -144,7 +144,15 @@ app.post('/api/generate', async (req, res) => {
     res.end();
   } catch (error) {
     console.error('API调用失败:', error);
-    res.status(500).json({ error: `API调用失败: ${error.message}` });
+    
+    // 如果响应头已经设置为流式传输，需要以流式格式返回错误
+    if (res.headersSent || res.getHeader('Content-Type') === 'text/event-stream') {
+      res.write(`data: ${JSON.stringify({ error: `API调用失败: ${error.message}` })}\n\n`);
+      res.write('data: [DONE]\n\n');
+      res.end();
+    } else {
+      res.status(500).json({ error: `API调用失败: ${error.message}` });
+    }
   }
 });
 

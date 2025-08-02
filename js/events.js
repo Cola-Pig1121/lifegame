@@ -110,32 +110,40 @@ const eventHandlers = {
         }
 
         try {
-            // 在这里添加加载动画和等待
+            // 在这里添加加载动画
             if (window.loadingManager) {
-                await window.loadingManager.show('正在感应天机变化...', 30000); // 等待30秒
+                window.loadingManager.show('正在感应天机变化...', 60000); // 显示加载动画，最长60秒
                 window.loadingManager.updateText('正在沟通冥冥之中的大道...');
             }
 
+            // 等待30秒后再发送请求
+            await new Promise(resolve => setTimeout(resolve, 30000));
+
             const storyResult = await generateAIStory(
-                prompt, 
-                this.state.baseUrl, 
-                this.state.apiKey, 
+                prompt,
+                this.state.baseUrl,
+                this.state.apiKey,
                 this.state.model
             );
-            
+
+            // 成功后隐藏加载动画
+            if (window.loadingManager) {
+                window.loadingManager.hide();
+            }
+
             updateGameStateFromStory(this.state, storyResult);
-            
+
             if (storyResult.breakthrough && this.state.player.rankIndex < playerSystem.ranks.length - 1) {
                 this.state.player.rankIndex++;
             }
-            
+
             updateStatus(this.elements, this.state);
-            
+
             const choices = generateDynamicChoices(storyResult);
             this.state.choices = choices;
-            
-            // 先显示事件文本和选项
-            await displayEvent(this.elements, storyResult.story || storyResult.eventText, choices);
+
+            // 先显示事件文本和选项，并显示重试按钮
+            await displayEvent(this.elements, storyResult.story || storyResult.eventText, choices, true);
 
             this.state.storyHistory.push({
                 event: storyResult.story || storyResult.eventText,
@@ -151,7 +159,16 @@ const eventHandlers = {
 
         } catch (error) {
             console.error("AI故事生成失败:", error);
-            fallbackExplore.call(this, playerSystem, currentRank);
+            // 停止加载动画
+            if (window.loadingManager) {
+                window.loadingManager.hide();
+            }
+            // 弹出提示
+            alert(`天机感应失败，似乎与上界的连接中断了。\n错误: ${error.message}\n\n请检查网络或API设置后重试。`);
+            
+            // 恢复之前的事件和选项，让用户可以重试
+            const lastEvent = this.state.storyHistory.length > 0 ? this.state.storyHistory[this.state.storyHistory.length - 1].event : "你站在原地，不知何去何从。";
+            await displayEvent(this.elements, lastEvent, this.state.choices);
         }
     },
 
@@ -193,32 +210,40 @@ const eventHandlers = {
         }
         
         try {
-            // 在这里添加加载动画和等待
+            // 在这里添加加载动画
             if (window.loadingManager) {
-                await window.loadingManager.show('正在感应天机变化...', 30000); // 等待30秒
+                window.loadingManager.show('正在感应天机变化...', 60000); // 显示加载动画，最长60秒
                 window.loadingManager.updateText('正在沟通冥冥之中的大道...');
             }
-            
+
+            // 等待30秒后再发送请求
+            await new Promise(resolve => setTimeout(resolve, 30000));
+
             const storyResult = await generateAIStory(
-                prompt_text, 
-                this.state.baseUrl, 
-                this.state.apiKey, 
+                prompt_text,
+                this.state.baseUrl,
+                this.state.apiKey,
                 this.state.model
             );
-            
+
+            // 成功后隐藏加载动画
+            if (window.loadingManager) {
+                window.loadingManager.hide();
+            }
+
             updateGameStateFromStory(this.state, storyResult);
-            
+
             if (storyResult.breakthrough && this.state.player.rankIndex < playerSystem.ranks.length - 1) {
                 this.state.player.rankIndex++;
             }
-            
+
             updateStatus(this.elements, this.state);
-            
+
             const choices = generateDynamicChoices(storyResult);
             this.state.choices = choices;
-            
-            // 先显示事件文本和选项
-            await displayEvent(this.elements, storyResult.story || storyResult.eventText, choices);
+
+            // 先显示事件文本和选项，并显示重试按钮
+            await displayEvent(this.elements, storyResult.story || storyResult.eventText, choices, true);
 
             this.state.storyHistory.push({
                 event: `【自定义行动】${customAction}\n\n${storyResult.story || storyResult.eventText}`,
@@ -234,44 +259,21 @@ const eventHandlers = {
 
         } catch (error) {
             console.error("AI故事生成失败:", error);
-            fallbackCustomAction.call(this, customAction, playerSystem, currentRank);
+            // 停止加载动画
+            if (window.loadingManager) {
+                window.loadingManager.hide();
+            }
+            // 弹出提示
+            alert(`天机感应失败，似乎与上界的连接中断了。\n错误: ${error.message}\n\n请检查网络或API设置后重试。`);
+            
+            // 恢复之前的事件和选项，让用户可以重试
+            const lastEvent = this.state.storyHistory.length > 0 ? this.state.storyHistory[this.state.storyHistory.length - 1].event : "你站在原地，不知何去何从。";
+            await displayEvent(this.elements, lastEvent, this.state.choices);
         }
     }
 };
 
 // Helper functions for events
-function fallbackExplore(playerSystem, currentRank) {
-    let text = `(AI连接失败，启用备用事件) 你花了一年时间探索，对【${currentRank.method}】有了更深的理解。`;
-    let choices = [{ text: "继续修炼", event: 'explore' }];
-
-    if (Math.random() < 0.3) {
-        const otherSystem = getRandomElement(cultivationSystems);
-        const otherRank = getRandomElement(otherSystem.ranks);
-        text += `\n你遇到了一个修炼【${otherSystem.systemName}】的【${otherRank.name}】高手，对方似乎对你很感兴趣。`;
-    }
-
-    if (Math.random() < 0.2 && this.state.player.rankIndex < playerSystem.ranks.length - 1) {
-        this.state.player.rankIndex++;
-        const newRank = playerSystem.ranks[this.state.player.rankIndex];
-        text += `\n\n【机缘】！你成功突破到了【${newRank.name}】境界！`;
-    }
-
-    updateStatus(this.elements, this.state);
-    displayEvent(this.elements, text, choices);
-    this.state.choices = choices;
-
-    this.state.storyHistory.push({
-        event: text,
-        choices: choices,
-        timestamp: Date.now(),
-        playerState: { ...this.state.player },
-        worldState: { ...this.state.world }
-    });
-
-    // 延迟保存，避免覆盖用户正在查看的选项框
-    this.scheduleAutoSave();
-}
-
 function createEnhancedAIPrompt(state, currentRank) {
     const { player, storyHistory } = state;
     const lastEvent = storyHistory.length > 0 ? storyHistory[storyHistory.length - 1].event : '';
@@ -325,42 +327,6 @@ function createCustomActionPrompt(state, currentRank, customAction) {
     }
   ]
 }`;
-}
-
-function fallbackCustomAction(customAction, playerSystem, currentRank) {
-    let text = `你尝试了"${customAction}"，虽然过程有些波折，但还是有所收获。`;
-    if (this.state.attributes) {
-        const attributeKeys = Object.keys(this.state.attributes);
-        const randomKey = getRandomElement(attributeKeys);
-        const change = Math.floor(Math.random() * 10) - 3;
-        this.state.attributes[randomKey] = Math.max(0, this.state.attributes[randomKey] + change);
-        if (change > 0) text += `\n你的${randomKey}提升了${change}点。`;
-        else if (change < 0) text += `\n你的${randomKey}下降了${Math.abs(change)}点。`;
-    }
-    if (Math.random() < 0.2 && this.state.player.rankIndex < playerSystem.ranks.length - 1) {
-        this.state.player.rankIndex++;
-        const newRank = playerSystem.ranks[this.state.player.rankIndex];
-        text += `\n\n【突破】！在这次行动中，你意外突破到了【${newRank.name}】境界！`;
-    }
-    updateStatus(this.elements, this.state);
-    const choices = [
-        { text: "[1] 继续探索", event: 'explore' },
-        { text: "[2] 总结经验", event: 'explore' },
-        { text: "[3] 寻找新机会", event: 'explore' },
-        { text: "[4] 自定义行动", event: 'custom_action' }
-    ];
-    displayEvent(this.elements, text, choices);
-    this.state.choices = choices;
-    this.state.storyHistory.push({
-        event: `【自定义行动】${customAction}\n\n${text}`,
-        choices: choices,
-        timestamp: Date.now(),
-        playerState: { ...this.state.player },
-        worldState: { ...this.state.world },
-        attributes: { ...this.state.attributes }
-    });
-    // 延迟保存，避免覆盖用户正在查看的选项框
-    this.scheduleAutoSave();
 }
 
 function generateDynamicChoices(storyResult) {

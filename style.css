@@ -74,11 +74,16 @@ body, html {
 #event-log {
     flex-grow: 1;
     overflow-y: auto;
+    overflow-x: hidden;
     color: var(--font-color);
     font-size: 18px;
     line-height: 1.8;
     padding-bottom: 15px;
+    padding-right: 10px;
     font-family: 'KaiTi', 'STKaiti', '楷体', 'SimKai', serif;
+    max-height: calc(100vh - 300px);
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-color) transparent;
 }
 
 #event-log p {

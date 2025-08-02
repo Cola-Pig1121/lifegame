@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const continueGameState = localStorage.getItem('continueGameState');
             if (continueGameState) {
                 localStorage.removeItem('continueGameState');
-                this.loadFromContinueState(JSON.parse(continueGameState));
+                await this.loadFromContinueState(JSON.parse(continueGameState));
             } else {
                 const loadedState = loadGame();
                 if (loadedState && loadedState.player) {
@@ -226,18 +226,26 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         },
 
-        loadFromContinueState(gameState) {
-            const savedState = localStorage.getItem('randomCultivationGameSave');
-            let currentApiKey = null;
-            let currentBaseUrl = null;
-            if (savedState) {
-                const oldState = JSON.parse(savedState);
-                currentApiKey = oldState.apiKey;
-                currentBaseUrl = oldState.baseUrl;
+        async loadFromContinueState(gameState) {
+            // 直接使用历史记录中的游戏状态，包括API配置
+            this.state = { ...gameState };
+            
+            // 如果历史记录中没有API配置，才从当前保存状态中获取
+            if (!this.state.baseUrl || !this.state.apiKey) {
+                const savedState = localStorage.getItem('randomCultivationGameSave');
+                if (savedState) {
+                    const oldState = JSON.parse(savedState);
+                    this.state.baseUrl = this.state.baseUrl || oldState.baseUrl;
+                    this.state.apiKey = this.state.apiKey || oldState.apiKey;
+                    this.state.model = this.state.model || oldState.model;
+                }
             }
-            this.state = { ...gameState, apiKey: currentApiKey, baseUrl: currentBaseUrl };
+            
+            // 保存更新后的状态，确保API配置被持久化
+            saveGame(this.state);
+            
             this.fullDisplayUpdate();
-            displayEvent(this.elements, "【系统】游戏进度已从历史记录中恢复。", this.state.choices);
+            await displayEvent(this.elements, "【系统】游戏进度已从历史记录中恢复。", this.state.choices);
         },
 
         fullDisplayUpdate() {
@@ -407,5 +415,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    // 将游戏实例设置为全局变量，供重试按钮使用
+    window.gameInstance = game;
     game.init();
 });

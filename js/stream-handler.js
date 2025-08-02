@@ -53,11 +53,21 @@ class StreamHandler {
 
                         try {
                             const parsed = JSON.parse(data);
+                            
+                            // 检查是否是错误消息
+                            if (parsed.error) {
+                                throw new Error(parsed.error);
+                            }
+                            
                             const delta = parsed.delta || '';
                             this.content += delta;
                             this.onDelta(delta);
                         } catch (e) {
-                            // 忽略解析错误，继续处理下一行
+                            // 如果是错误对象，抛出错误
+                            if (e.message && e.message !== 'Unexpected token') {
+                                throw e;
+                            }
+                            // 否则忽略解析错误，继续处理下一行
                             console.log('跳过无效的JSON行:', data);
                         }
                     }
