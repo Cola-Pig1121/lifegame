@@ -1,0 +1,838 @@
+:root {
+    --font-color: #EAEAEA;
+    --bg-color: rgba(0, 0, 0, 0.7);
+    --border-color: rgba(255, 255, 255, 0.3);
+    --button-bg: rgba(44, 62, 80, 0.8);
+    --button-hover-bg: rgba(52, 73, 94, 1);
+}
+
+body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 100%;
+    background-color: #FFFFFF;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'KaiTi', 'STKaiti', '楷体', 'SimKai', serif;
+    overflow: hidden;
+}
+
+.game-wrapper {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#game-container {
+    /* Responsive 9:16 aspect ratio based on viewport height */
+    height: 95vh;
+    width: calc(95vh * 9 / 16);
+    
+    /* Constraints to prevent overflow on extreme aspect ratios */
+    max-width: calc(100vw - 20px);
+    max-height: calc((100vw - 20px) * 16 / 9);
+
+    background-image: url('images/Background.png');
+    background-size: cover;
+    background-position: center;
+    border: 2px solid var(--border-color);
+    border-radius: 20px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    position: relative;
+}
+
+#game-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.7);
+    border-radius: 18px;
+    z-index: 0;
+}
+
+#game-screen {
+    flex-grow: 1;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    overflow-y: hidden;
+    position: relative;
+    z-index: 1;
+}
+
+#event-log {
+    flex-grow: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    color: var(--font-color);
+    font-size: 18px;
+    line-height: 1.8;
+    padding-bottom: 15px;
+    padding-right: 10px;
+    font-family: 'KaiTi', 'STKaiti', '楷体', 'SimKai', serif;
+    max-height: calc(100vh - 300px);
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-color) transparent;
+}
+
+#event-log p {
+    margin-bottom: 1em;
+}
+
+#choices-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.choice-button {
+    width: 100%;
+    padding: 12px;
+    background-color: var(--button-bg);
+    color: var(--font-color);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    cursor: pointer;
+    text-align: center;
+    font-size: 16px;
+    font-family: 'KaiTi', 'STKaiti', '楷体', 'SimKai', serif;
+    transition: background-color 0.3s, transform 0.1s;
+}
+
+.choice-button:hover {
+    background-color: var(--button-hover-bg);
+}
+
+.choice-button:active {
+    transform: scale(0.98);
+}
+
+#status-bar {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 15px;
+    background-color: transparent;
+    border-top: 1px solid var(--border-color);
+    color: var(--font-color);
+    font-size: 14px;
+    font-family: 'KaiTi', 'STKaiti', '楷体', 'SimKai', serif;
+    position: relative;
+    z-index: 1;
+    overflow-x: auto;
+    min-height: 80px; /* 确保最小高度 */
+}
+
+#player-status, #world-status {
+    width: 48%;
+    overflow-y: auto; /* 添加垂直滚动 */
+    max-height: 150px; /* 设置最大高度 */
+    min-height: 60px; /* 确保最小高度 */
+    padding-right: 5px; /* 为滚动条留出空间 */
+}
+
+/* 添加小屏幕设备的响应式样式 */
+@media (max-width: 480px) {
+    #status-bar {
+        flex-direction: column;
+        min-height: 120px;
+    }
+    
+    #player-status, #world-status {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+    
+    #world-status {
+        margin-bottom: 0;
+    }
+}
+
+#status-bar div {
+    white-space: pre-wrap;
+}
+
+/* 添加状态栏滚动条样式 */
+#player-status::-webkit-scrollbar,
+#world-status::-webkit-scrollbar {
+    width: 5px;
+}
+
+#player-status::-webkit-scrollbar-track,
+#world-status::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+#player-status::-webkit-scrollbar-thumb,
+#world-status::-webkit-scrollbar-thumb {
+    background-color: var(--border-color);
+    border-radius: 10px;
+}
+
+#menu-bar {
+    display: flex;
+    justify-content: space-around;
+    padding: 10px 0;
+    background-color: transparent;
+    border-top: 1px solid var(--border-color);
+    position: relative;
+    z-index: 1;
+}
+
+#menu-bar button, #menu-bar a {
+    background: none;
+    border: 1px solid var(--border-color);
+    color: var(--font-color);
+    padding: 8px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    font-family: 'KaiTi', 'STKaiti', '楷体', 'SimKai', serif;
+    transition: background-color 0.3s;
+    text-decoration: none;
+}
+
+#menu-bar button:hover, #menu-bar a:hover {
+    background-color: var(--button-hover-bg);
+}
+
+footer {
+    position: fixed;
+    bottom: 10px;
+    width: 100%;
+    text-align: center;
+    color: rgba(0, 0, 0, 0.5);
+    font-size: 14px;
+    pointer-events: none;
+}
+
+/* For typewriter effect */
+.typewriter-char {
+    opacity: 0;
+    animation: fadeIn 0.1s forwards;
+}
+
+@keyframes fadeIn {
+    to {
+        opacity: 1;
+    }
+}
+
+/* Scrollbar styling */
+#event-log::-webkit-scrollbar {
+    width: 5px;
+}
+
+#event-log::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+#event-log::-webkit-scrollbar-thumb {
+    background-color: var(--border-color);
+    border-radius: 10px;
+}
+
+/* 历史记录界面样式 */
+#history-screen {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--bg-color);
+    border-radius: 18px;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    font-family: 'KaiTi', 'STKaiti', '楷体', serif;
+}
+
+.history-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.history-header h2 {
+    color: #F39C12;
+    font-size: 24px;
+    margin: 0;
+    text-shadow: 0 0 10px rgba(243, 156, 18, 0.3);
+}
+
+#back-to-game-btn {
+    background-color: var(--button-bg);
+    color: var(--font-color);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 16px;
+    font-family: 'KaiTi', 'STKaiti', '楷体', 'SimKai', serif;
+    transition: background-color 0.3s;
+}
+
+#back-to-game-btn:hover {
+    background-color: var(--button-hover-bg);
+}
+
+.history-container {
+    flex-grow: 1;
+    overflow-y: auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 15px;
+    padding: 10px 0;
+}
+
+.history-card {
+    background: linear-gradient(135deg, rgba(44, 62, 80, 0.9), rgba(52, 73, 94, 0.8));
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 15px;
+    color: var(--font-color);
+    transition: transform 0.3s, box-shadow 0.3s;
+    cursor: pointer;
+}
+
+.history-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+    border-color: #F39C12;
+}
+
+.history-card-title {
+    font-size: 18px;
+    font-weight: bold;
+    color: #F39C12;
+    margin-bottom: 10px;
+    text-shadow: 0 0 5px rgba(243, 156, 18, 0.3);
+}
+
+.history-card-info {
+    font-size: 14px;
+    line-height: 1.6;
+    margin-bottom: 15px;
+}
+
+.history-card-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+}
+
+.history-card-actions button {
+    background-color: rgba(44, 62, 80, 0.8);
+    color: var(--font-color);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 6px 12px;
+    cursor: pointer;
+    font-size: 12px;
+    font-family: 'KaiTi', 'STKaiti', '楷体', 'SimKai', serif;
+    transition: background-color 0.3s;
+}
+
+.history-card-actions button:hover {
+    background-color: var(--button-hover-bg);
+}
+
+.history-card-actions .continue-btn {
+    background-color: rgba(39, 174, 96, 0.8);
+}
+
+.history-card-actions .continue-btn:hover {
+    background-color: rgba(39, 174, 96, 1);
+}
+
+.history-card-actions .delete-btn {
+    background-color: rgba(231, 76, 60, 0.8);
+}
+
+.history-card-actions .delete-btn:hover {
+    background-color: rgba(231, 76, 60, 1);
+}
+
+/* 确认弹窗样式 */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    font-family: 'KaiTi', 'STKaiti', '楷体', serif;
+}
+
+.modal-content {
+    background: linear-gradient(135deg, rgba(44, 62, 80, 0.95), rgba(52, 73, 94, 0.9));
+    border: 2px solid #F39C12;
+    border-radius: 15px;
+    padding: 30px;
+    max-width: 400px;
+    width: 90%;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.modal-content h3 {
+    color: #F39C12;
+    font-size: 20px;
+    margin-bottom: 15px;
+    text-shadow: 0 0 10px rgba(243, 156, 18, 0.3);
+}
+
+.modal-content p {
+    color: var(--font-color);
+    font-size: 16px;
+    line-height: 1.6;
+    margin-bottom: 25px;
+}
+
+.modal-buttons {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.modal-buttons button {
+    background-color: var(--button-bg);
+    color: var(--font-color);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 10px 15px;
+    cursor: pointer;
+    font-size: 14px;
+    font-family: 'KaiTi', 'STKaiti', '楷体', 'SimKai', serif;
+    transition: background-color 0.3s, transform 0.1s;
+    min-width: 80px;
+}
+
+.modal-buttons button:hover {
+    background-color: var(--button-hover-bg);
+}
+
+.modal-buttons button:active {
+    transform: translateY(1px);
+}
+
+/* 设置弹窗样式 */
+.settings-modal-content {
+    width: 500px;
+    max-width: 90vw;
+}
+
+.settings-form {
+    margin: 20px 0;
+}
+
+.setting-item {
+    margin-bottom: 20px;
+}
+
+.setting-item label {
+    display: block;
+    color: var(--font-color);
+    font-size: 14px;
+    margin-bottom: 8px;
+    font-family: 'KaiTi', 'STKaiti', '楷体', 'SimKai', serif;
+}
+
+.setting-item input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    background-color: rgba(44, 62, 80, 0.8);
+    color: var(--font-color);
+    font-size: 14px;
+    font-family: 'KaiTi', 'STKaiti', '楷体', 'SimKai', serif;
+    box-sizing: border-box;
+}
+
+.setting-item input:focus {
+    outline: none;
+    border-color: var(--accent-color);
+    box-shadow: 0 0 5px rgba(243, 156, 18, 0.3);
+}
+
+.preset-buttons {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+    flex-wrap: wrap;
+}
+
+.preset-btn {
+    background-color: rgba(52, 73, 94, 0.8);
+    color: var(--font-color);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    padding: 4px 8px;
+    cursor: pointer;
+    font-size: 12px;
+    font-family: 'KaiTi', 'STKaiti', '楷体', 'SimKai', serif;
+    transition: background-color 0.3s;
+}
+
+.preset-btn:hover {
+    background-color: rgba(243, 156, 18, 0.2);
+}
+
+#toggle-key-visibility {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: var(--font-color);
+    cursor: pointer;
+    font-size: 16px;
+    padding: 0;
+    width: 24px;
+    height: 24px;
+}
+
+.setting-item {
+    position: relative;
+}
+
+.setting-item input[type="password"],
+.setting-item input[type="text"] {
+    padding-right: 40px;
+}
+
+.current-settings {
+    background-color: rgba(52, 73, 94, 0.5);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 15px;
+    margin-top: 20px;
+}
+
+.current-settings h4 {
+    color: var(--font-color);
+    margin: 0 0 10px 0;
+    font-size: 16px;
+    font-family: 'KaiTi', 'STKaiti', '楷体', 'SimKai', serif;
+}
+
+.current-settings p {
+    color: rgba(236, 240, 241, 0.8);
+    margin: 5px 0;
+    font-size: 14px;
+    font-family: 'KaiTi', 'STKaiti', '楷体', 'SimKai', serif;
+    word-break: break-all;
+}
+
+.current-settings span {
+    color: var(--accent-color);
+}
+
+/* 历史记录页面样式 */
+.history-container {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.history-card {
+    background: linear-gradient(135deg, rgba(44, 62, 80, 0.8), rgba(52, 73, 94, 0.8));
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 20px;
+    transition: transform 0.3s, box-shadow 0.3s;
+    cursor: pointer;
+}
+
+.history-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(243, 156, 18, 0.3);
+}
+
+.history-card-title {
+    color: var(--font-color);
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    text-align: center;
+    font-family: 'KaiTi', 'STKaiti', '楷体', 'SimKai', serif;
+}
+
+.history-card-info {
+    color: #FFFFFF;
+    font-size: 14px;
+    line-height: 1.6;
+    margin-bottom: 15px;
+    font-family: 'KaiTi', 'STKaiti', '楷体', 'SimKai', serif;
+}
+
+.history-card-info div {
+    margin-bottom: 5px;
+}
+
+.history-card-actions {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.history-card-actions button {
+    background-color: rgba(44, 62, 80, 0.8);
+    color: var(--font-color);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 6px 12px;
+    cursor: pointer;
+    font-size: 12px;
+    font-family: 'KaiTi', 'STKaiti', '楷体', 'SimKai', serif;
+    transition: background-color 0.3s;
+}
+
+.continue-btn:hover {
+    background-color: rgba(39, 174, 96, 0.3);
+}
+
+.delete-btn:hover {
+    background-color: rgba(231, 76, 60, 0.3);
+}
+
+.empty-history {
+    text-align: center;
+    color: rgba(236, 240, 241, 0.6);
+    font-size: 18px;
+    line-height: 1.8;
+    margin-top: 50px;
+    font-family: 'KaiTi', 'STKaiti', '楷体', 'SimKai', serif;
+}
+
+/* 页面头部样式 */
+.page-header {
+    text-align: center;
+    padding: 20px 0;
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 20px;
+}
+
+.page-header h2 {
+    color: var(--font-color);
+    font-size: 24px;
+    margin: 0;
+    font-family: 'KaiTi', 'STKaiti', '楷体', 'SimKai', serif;
+    text-shadow: 0 0 10px rgba(243, 156, 18, 0.3);
+}
+
+/* 页面信息区域样式 */
+.page-info, .page-tips {
+    color: var(--font-color);
+    font-family: 'KaiTi', 'STKaiti', '楷体', 'SimKai', serif;
+    text-align: center;
+}
+
+.page-info {
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.page-tips {
+    font-size: 14px;
+    color: rgba(236, 240, 241, 0.8);
+    margin-top: 5px;
+}
+
+/* 体系参照容器样式 */
+#reference-container {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+}
+
+#save-and-start-btn {
+    background-color: rgba(39, 174, 96, 0.8);
+}
+
+#save-and-start-btn:hover {
+    background-color: rgba(39, 174, 96, 1);
+}
+
+#direct-start-btn {
+    background-color: rgba(230, 126, 34, 0.8);
+}
+
+#direct-start-btn:hover {
+    background-color: rgba(230, 126, 34, 1);
+}
+
+/* 空历史记录提示 */
+.empty-history {
+    text-align: center;
+    color: var(--font-color);
+    font-size: 18px;
+    margin-top: 50px;
+    opacity: 0.7;
+}
+
+/* 体系参照表样式 */
+.system-section {
+    background: linear-gradient(135deg, rgba(44, 62, 80, 0.9), rgba(52, 73, 94, 0.8));
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    margin-bottom: 30px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.system-title {
+    background-color: rgba(243, 156, 18, 0.2);
+    color: #F39C12;
+    font-size: 20px;
+    font-weight: bold;
+    padding: 15px 20px;
+    margin: 0;
+    text-align: center;
+    font-family: 'KaiTi', 'STKaiti', '楷体', 'SimKai', serif;
+    text-shadow: 0 0 10px rgba(243, 156, 18, 0.3);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.system-description {
+    color: var(--font-color);
+    font-size: 16px;
+    padding: 15px 20px;
+    margin: 0;
+    line-height: 1.6;
+    font-family: 'KaiTi', 'STKaiti', '楷体', 'SimKai', serif;
+    background-color: rgba(52, 73, 94, 0.3);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.ranks-table {
+    display: table;
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table-header {
+    display: table-row;
+    background-color: rgba(44, 62, 80, 0.8);
+    font-weight: bold;
+}
+
+.table-row {
+    display: table-row;
+    transition: background-color 0.3s;
+}
+
+.table-row:nth-child(even) {
+    background-color: rgba(52, 73, 94, 0.3);
+}
+
+.table-row:hover {
+    background-color: rgba(243, 156, 18, 0.1);
+}
+
+.table-header > div,
+.table-row > div {
+    display: table-cell;
+    padding: 12px 15px;
+    border-bottom: 1px solid var(--border-color);
+    color: var(--font-color);
+    font-size: 14px;
+    font-family: 'KaiTi', 'STKaiti', '楷体', 'SimKai', serif;
+    vertical-align: top;
+    line-height: 1.4;
+}
+
+.rank-name {
+    width: 15%;
+    font-weight: bold;
+    color: #F39C12;
+}
+
+.rank-method {
+    width: 20%;
+}
+
+.rank-difficulty {
+    width: 10%;
+    text-align: center;
+}
+
+.rank-bottleneck {
+    width: 20%;
+}
+
+.rank-resources {
+    width: 20%;
+}
+
+.rank-comparison {
+    width: 15%;
+}
+
+.table-header .rank-name,
+.table-header .rank-method,
+.table-header .rank-difficulty,
+.table-header .rank-bottleneck,
+.table-header .rank-resources,
+.table-header .rank-comparison {
+    color: #F39C12;
+    text-align: center;
+    font-weight: bold;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .ranks-table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+    
+    .table-header,
+    .table-row {
+        display: block;
+        margin-bottom: 15px;
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        overflow: hidden;
+    }
+    
+    .table-header > div,
+    .table-row > div {
+        display: block;
+        width: 100%;
+        border-bottom: 1px solid var(--border-color);
+        padding: 8px 15px;
+    }
+    
+    .table-header > div:before,
+    .table-row > div:before {
+        content: attr(data-label) ": ";
+        font-weight: bold;
+        color: #F39C12;
+    }
+}

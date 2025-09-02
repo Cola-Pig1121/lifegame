@@ -1,0 +1,126 @@
+/* 加载动画样式 */
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  color: #fff;
+  font-family: 'Arial', sans-serif;
+}
+
+.loading-spinner {
+  width: 80px;
+  height: 80px;
+  border: 8px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top: 8px solid #fff;
+  animation: spin 1s linear infinite;
+  margin-bottom: 20px;
+}
+
+.loading-text {
+  font-size: 18px;
+  text-align: center;
+  max-width: 80%;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  padding: 0 20px;
+  box-sizing: border-box;
+}
+
+.loading-tips {
+  margin-top: 30px;
+  font-size: 16px;
+  font-style: italic;
+  text-align: center;
+  max-width: 80%;
+  color: #ccc;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  padding: 0 20px;
+  box-sizing: border-box;
+}
+
+/* 修仙主题的加载提示 */
+.loading-tips-container {
+  height: 60px;
+  overflow: hidden;
+  width: 90%;
+  max-width: 600px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* 淡入淡出动画 */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+.fade-in {
+  animation: fadeIn 0.5s ease-in forwards;
+}
+
+.fade-out {
+  animation: fadeOut 0.5s ease-out forwards;
+}
+
+/* 响应式设计 */
+@media screen and (max-width: 768px) {
+  .loading-spinner {
+    width: 60px;
+    height: 60px;
+    border-width: 6px;
+  }
+  
+  .loading-text {
+    font-size: 16px;
+    max-width: 90%;
+  }
+  
+  .loading-tips {
+    font-size: 14px;
+    max-width: 90%;
+  }
+}
+
+/* 手机屏幕特别优化 */
+@media screen and (max-width: 480px) {
+  .loading-spinner {
+    width: 50px;
+    height: 50px;
+    border-width: 5px;
+  }
+  
+  .loading-text {
+    font-size: 14px;
+    max-width: 95%;
+    padding: 0 10px;
+  }
+  
+  .loading-tips {
+    font-size: 12px;
+    max-width: 95%;
+    padding: 0 10px;
+  }
+  
+  .loading-tips-container {
+    height: 50px;
+    width: 95%;
+  }
+}

@@ -1,0 +1,220 @@
+body {
+    font-family: 'KaiTi', 'STKaiti', '楷体', 'SimKai', serif;
+    line-height: 1.6;
+    background-color: #ffffff;
+    color: #000000;
+    margin: 0;
+    padding: 20px;
+    overflow-y: auto;
+}
+
+/* 滚动条样式 */
+::-webkit-scrollbar {
+    width: 5px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.3);
+    border-radius: 10px;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 40px;
+    border-bottom: 2px solid #ddd;
+    padding-bottom: 20px;
+}
+
+header h1 {
+    color: #000000;
+}
+
+header a {
+    text-decoration: none;
+    color: #3498db;
+    font-size: 1.2em;
+    transition: color 0.3s;
+}
+
+header a:hover {
+    color: #2980b9;
+}
+
+/* 体系卡片样式 */
+.system-section {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    margin-bottom: 30px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    overflow: hidden;
+}
+
+.system-title {
+    background-color: #34495e;
+    color: #fff;
+    padding: 15px 20px;
+    margin: 0;
+    font-size: 1.8em;
+}
+
+.system-description {
+    padding: 15px 20px;
+    margin: 0;
+    background-color: #ffffff;
+    font-style: italic;
+    color: #000000;
+}
+
+/* 自适应表格样式 */
+.ranks-table {
+    width: 100%;
+    overflow-x: auto;
+    background-color: #fff;
+}
+
+.table-header, .table-row {
+    display: grid;
+    grid-template-columns: 
+        minmax(80px, 1fr) 
+        minmax(120px, 2fr) 
+        minmax(60px, 0.8fr) 
+        minmax(100px, 1.5fr) 
+        minmax(100px, 1.5fr) 
+        minmax(80px, 1fr);
+    gap: 1px;
+    background-color: #ddd;
+}
+
+.table-header {
+    background-color: #34495e;
+    color: #fff;
+    font-weight: 600;
+}
+
+.table-header > div, .table-row > div {
+    padding: 12px 8px;
+    background-color: #fff;
+    color: #000000;
+    display: flex;
+    align-items: center;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    hyphens: auto;
+    line-height: 1.4;
+    min-height: 40px;
+}
+
+.table-header > div {
+    background-color: #34495e;
+    color: #fff;
+    font-weight: 600;
+    justify-content: center;
+    text-align: center;
+}
+
+.table-row:nth-child(even) > div {
+    background-color: #f9f9f9;
+}
+
+.table-row:hover > div {
+    background-color: #f1f1f1;
+}
+
+/* 响应式设计 */
+@media (max-width: 1200px) {
+    .table-header, .table-row {
+        grid-template-columns: 
+            minmax(70px, 0.8fr) 
+            minmax(100px, 1.8fr) 
+            minmax(50px, 0.6fr) 
+            minmax(80px, 1.2fr) 
+            minmax(80px, 1.2fr) 
+            minmax(70px, 0.8fr);
+    }
+    
+    .table-header > div, .table-row > div {
+        padding: 10px 6px;
+        font-size: 0.9em;
+    }
+}
+
+@media (max-width: 900px) {
+    .table-header, .table-row {
+        grid-template-columns: 
+            minmax(60px, 0.7fr) 
+            minmax(80px, 1.5fr) 
+            minmax(40px, 0.5fr) 
+            minmax(70px, 1fr) 
+            minmax(70px, 1fr) 
+            minmax(60px, 0.7fr);
+    }
+    
+    .table-header > div, .table-row > div {
+        padding: 8px 4px;
+        font-size: 0.8em;
+        min-height: 35px;
+    }
+}
+
+@media (max-width: 600px) {
+    .ranks-table {
+        font-size: 0.75em;
+    }
+    
+    .table-header, .table-row {
+        grid-template-columns: 
+            minmax(50px, 0.6fr) 
+            minmax(70px, 1.3fr) 
+            minmax(35px, 0.4fr) 
+            minmax(60px, 0.9fr) 
+            minmax(60px, 0.9fr) 
+            minmax(50px, 0.6fr);
+    }
+    
+    .table-header > div, .table-row > div {
+        padding: 6px 3px;
+        font-size: 0.9em;
+        min-height: 30px;
+        line-height: 1.2;
+    }
+}
+
+/* 按钮交互优化 */
+.choice-button {
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.choice-button:active {
+    transform: scale(0.95);
+}
+
+.choice-button.clicked {
+    opacity: 0.5;
+    pointer-events: none;
+    transform: scale(0.95);
+}
+
+.choice-button.processing {
+    background-color: #95a5a6;
+    color: #fff;
+}
+
+.choice-button.processing::after {
+    content: "处理中...";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(0, 0, 0, 0.8);
+    color: #fff;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.8em;
+}

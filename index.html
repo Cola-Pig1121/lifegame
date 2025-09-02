@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>随机修仙人生</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="css/loading.css">
+</head>
+
+<body>
+    <div class="game-wrapper">
+        <div id="game-container">
+            <div id="game-screen">
+                <div id="event-log"></div>
+                <div id="choices-container"></div>
+            </div>
+            <div id="status-bar">
+                <div id="player-status"></div>
+                <div id="world-status"></div>
+            </div>
+            <div id="menu-bar">
+                <button id="new-story-btn">新故事</button>
+                <button id="save-btn">保存</button>
+                <button id="load-btn">读取</button>
+                <button id="history-btn">历史</button>
+                <button id="reference-btn">体系</button>
+                <button id="settings-btn">设置</button>
+                <button id="export-btn">导出</button>
+                <button id="import-btn">导入</button>
+                <input type="file" id="import-file" style="display: none;">
+            </div>
+        </div>
+
+
+        <!-- 确认弹窗 -->
+        <div id="confirm-modal" class="modal" style="display: none;">
+            <div class="modal-content">
+                <h3>保存当前进度</h3>
+                <p>检测到当前游戏进度，是否保存到历史记录？</p>
+                <div class="modal-buttons">
+                    <button id="save-and-start-btn">保存并开始</button>
+                    <button id="direct-start-btn">直接开始</button>
+                    <button id="cancel-start-btn">取消</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 设置弹窗 -->
+        <div id="settings-modal" class="modal" style="display: none;">
+            <div class="modal-content settings-modal-content">
+                <h3>API设置</h3>
+                <div class="settings-form">
+                    <div class="setting-item">
+                        <label for="base-url-input">Base URL:</label>
+                        <input type="text" id="base-url-input" placeholder="请输入API的Base URL">
+                        <div class="preset-buttons">
+                            <button class="preset-btn"
+                                data-url="https://api-inference.modelscope.cn/v1/chat/completions">ModelScope</button>
+                            <button class="preset-btn"
+                                data-url="https://router.huggingface.co/v1/chat/completions">HuggingFace</button>
+                        </div>
+                    </div>
+                    <div class="setting-item">
+                        <label for="model-select">模型选择:</label>
+                        <select id="model-select">
+                            <option value="">请先选择Base URL</option>
+                        </select>
+                    </div>
+                    <div class="setting-item">
+                        <label for="api-key-input">API Key:</label>
+                        <input type="password" id="api-key-input" placeholder="请输入你的API Key">
+                        <button id="toggle-key-visibility" type="button">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                <circle cx="12" cy="12" r="3"></circle>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="setting-item">
+                        <label for="player-name-input">角色名字:</label>
+                        <input type="text" id="player-name-input" placeholder="请输入角色名字">
+                        <button id="random-name-btn" type="button">随机</button>
+                    </div>
+                    <div class="current-settings">
+                        <h4>当前设置:</h4>
+                        <p>Base URL: <span id="current-base-url">未设置</span></p>
+                        <p>模型: <span id="current-model">未设置</span></p>
+                        <p>API Key: <span id="current-api-key">未设置</span></p>
+                    </div>
+                </div>
+                <div class="modal-buttons">
+                    <button id="save-settings-btn">保存设置</button>
+
+                    <button id="start-explore-btn" style="display: none;">开始探索</button>
+                    <button id="cancel-settings-btn">取消</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <footer>Cola Pig</footer>
+
+    <!-- 按依赖顺序加载脚本 -->
+    <script src="systems.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/loading-manager.js"></script>
+    <script src="js/stream-handler.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/adventure-config.js"></script>
+    <script src="js/adventure-manager.js"></script>
+    <script src="js/state.js"></script>
+    <script src="js/context/ErrorHandler.js"></script>
+    <script src="js/context/WeightCalculator.js"></script>
+    <script src="js/context/RelationshipAnalyzer.js"></script>
+    <script src="js/context/ContextAnalyzer.js"></script>
+    <script src="js/context/ContextAdventureManager.js"></script>
+    <script src="js/events.js"></script>
+    <script src="game.js"></script>
+</body>
+
+</html>
