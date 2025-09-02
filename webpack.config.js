@@ -7,7 +7,7 @@ export default {
   entry: './server.js',
   target:"node",
   output: {
-    path: path.resolve(__dirnameNew, 'dist'),
+    path: path.resolve(__dirnameNew, 'public'),
     filename: 'bundle.js',
   },
 };
